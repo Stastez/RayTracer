@@ -9,6 +9,7 @@ private:
     glm::vec3 origin;
     glm::vec3 direction;
     static float randomFloat(float max);
+    static void deviateVec(glm::vec3& vec, float magnitude);
 
 public:
     Ray();
@@ -16,6 +17,8 @@ public:
     [[nodiscard]] glm::vec3 getOrigin() const;
     [[nodiscard]] glm::vec3 getDirection() const;
     void deviate(float magnitude);
+    void deviateOrigin(float magnitude);
+    void deviateDirection(float magnitude);
 };
 
 } // RayTracer

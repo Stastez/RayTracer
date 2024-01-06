@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include "ConfigReader.h"
 #include "Picture.h"
@@ -17,7 +18,7 @@ int main(const int argc, const char* argv[])
 
     auto config = RayTracer::ConfigReader::readConfig(argv[1]);
 
-    const auto pic = RayTracer::RayCaster::castRays(config, 16);
+    const auto pic = RayTracer::RayCaster::castRays(config, 128, std::thread::hardware_concurrency());
 
     //std::cout << pic.getDebugView() << std::endl;
 

@@ -10,7 +10,9 @@ protected:
 
 public:
     Plane();
+    explicit Plane(const glm::vec3& color);
     Plane(const glm::vec3& origin, const glm::vec3& normal);
+    Plane(const glm::vec3& origin, const glm::vec3& normal, const glm::vec3& color);
     [[nodiscard]] Intersection intersect(const Ray& ray) const override;
 };
 

@@ -22,6 +22,8 @@ add_executable(${TARGET_NAME} main.cpp
         Sphere.h
         Scene.cpp
         Scene.h
+        ConfigReader.cpp
+        ConfigReader.h
 )
 
 if(MSVC)

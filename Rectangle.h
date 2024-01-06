@@ -11,7 +11,7 @@ protected:
 public:
     Rectangle();
     Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3);
-    Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3, const glm::vec3& color);
+    Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3, const glm::vec3& color, float metalness);
     [[nodiscard]] Intersection intersect(const Ray& ray) const override;
 };
 

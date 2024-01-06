@@ -4,15 +4,15 @@
 
 namespace RayTracer {
 
-    Scene::Scene() : Geometry({std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity()}) {};
+    Scene::Scene() = default;
 
-    Scene::Scene(std::vector<std::unique_ptr<Geometry>>&& objects) : Geometry({std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity()}), objects(std::move(objects)) {}
+    Scene::Scene(std::vector<std::unique_ptr<Geometry>>&& objects) : objects(std::move(objects)) {}
 
     Intersection Scene::intersect(const Ray& ray) const
     {
-        if (objects.empty()) return {false, {}, std::numeric_limits<float>::infinity(), color};
+        if (objects.empty()) return {false, {}, std::numeric_limits<float>::infinity(), nullptr};
 
-        auto closestIntersection = Intersection{false, {}, std::numeric_limits<float>::infinity(), color};
+        auto closestIntersection = Intersection{false, {}, std::numeric_limits<float>::infinity(), nullptr};
 
         for (const auto& object : objects)
         {

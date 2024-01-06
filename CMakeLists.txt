@@ -24,6 +24,8 @@ add_executable(${TARGET_NAME} main.cpp
         Scene.h
         ConfigReader.cpp
         ConfigReader.h
+        RayCaster.cpp
+        RayCaster.h
 )
 
 if(MSVC)

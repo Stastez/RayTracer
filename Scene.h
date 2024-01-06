@@ -8,14 +8,14 @@
 
 namespace RayTracer {
 
-class Scene final : public Geometry {
+class Scene {
 private:
     std::vector<std::unique_ptr<Geometry>> objects;
 
 public:
     Scene();
     explicit Scene(std::vector<std::unique_ptr<Geometry>>&& objects);
-    [[nodiscard]] Intersection intersect(const Ray& ray) const override;
+    [[nodiscard]] Intersection intersect(const Ray& ray) const;
     void addObject(Geometry* object);
     void addObjects(std::vector<std::unique_ptr<Geometry>>&& objects);
     void setObjects(std::vector<std::unique_ptr<Geometry>>&& objects);

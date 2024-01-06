@@ -12,8 +12,9 @@ protected:
 public:
     Sphere();
     Sphere(const glm::vec3& center, float radius);
-    Sphere(const glm::vec3& center, float radius, const glm::vec3& color);
+    Sphere(const glm::vec3& center, float radius, const glm::vec3& color, float metalness);
     [[nodiscard]] Intersection intersect(const Ray& ray) const override;
+    [[nodiscard]] Ray reflectRay(const Ray& ray, const Intersection& intersection) const override;
 };
 
 } // RayTracer

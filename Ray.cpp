@@ -6,6 +6,12 @@ namespace RayTracer {
 
     Ray::Ray(const glm::vec3& origin, const glm::vec3& direction) : origin(origin), direction(glm::normalize(direction)) {}
 
+    void Ray::deviate(const float magnitude)
+    {
+        const auto deviation = glm::vec3{randomFloat(magnitude), randomFloat(magnitude), randomFloat(magnitude)};
+        direction += deviation;
+    }
+
     glm::vec3 Ray::getDirection() const
     {
         return direction;
@@ -16,5 +22,9 @@ namespace RayTracer {
         return origin;
     }
 
+    float Ray::randomFloat(const float max)
+    {
+        return static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/max));
+    }
 
 } // RayTracer

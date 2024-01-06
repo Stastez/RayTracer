@@ -15,8 +15,8 @@ namespace RayTracer {
         normal = glm::cross(xAxis, yAxis);
     }
 
-    Rectangle::Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3, const glm::vec3& color) :
-        Plane(color),
+    Rectangle::Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3, const glm::vec3& color, const float metalness) :
+        Plane(color, metalness),
         point1(point1),
         point2(point2),
         point3(point3),
@@ -38,7 +38,7 @@ namespace RayTracer {
         const auto xAxisProjection = glm::dot(xAxis, differenceFromOrigin) / glm::dot(xAxis, xAxis) * xAxis;
         const auto yAxisProjection = glm::dot(yAxis, differenceFromOrigin) / glm::dot(yAxis, yAxis) * yAxis;
 
-        return (glm::length(xAxisProjection) <= glm::length(xAxis) && glm::length(yAxisProjection) <= glm::length(yAxis)) ? possibleIntersection : Intersection{false, possibleIntersection.position, possibleIntersection.distance, color};
+        return (glm::length(xAxisProjection) <= glm::length(xAxis) && glm::length(yAxisProjection) <= glm::length(yAxis)) ? possibleIntersection : Intersection{false, possibleIntersection.position, possibleIntersection.distance, this};
     }
 
 } // RayTracer

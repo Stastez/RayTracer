@@ -45,18 +45,22 @@ namespace RayTracer {
                 case 'p':
                     {
                         if (!getline(configStream, line)) continue;
+                        auto metalness = splitString(line);
+                        if (!getline(configStream, line)) continue;
                         auto color = splitString(line);
                         if (!getline(configStream, line)) continue;
                         auto origin = splitString(line);
                         if (!getline(configStream, line)) continue;
                         auto normal = splitString(line);
 
-                        config.objects.emplace_back(std::make_unique<Plane>(origin, normal, color));
+                        config.objects.emplace_back(std::make_unique<Plane>(origin, normal, color, metalness[0]));
                     }
                     break;
 
                 case 'r':
                     {
+                        if (!getline(configStream, line)) continue;
+                        auto metalness = splitString(line);
                         if (!getline(configStream, line)) continue;
                         auto color = splitString(line);
                         if (!getline(configStream, line)) continue;
@@ -67,12 +71,14 @@ namespace RayTracer {
                         auto upperLeft = splitString(line);
 
                         config.objects.emplace_back(
-                            std::make_unique<Rectangle>(lowerLeft, lowerRight, upperLeft, color));
+                            std::make_unique<Rectangle>(lowerLeft, lowerRight, upperLeft, color, metalness[0]));
                     }
                     break;
 
                 case 's':
                     {
+                        if (!getline(configStream, line)) continue;
+                        auto metalness = splitString(line);
                         if (!getline(configStream, line)) continue;
                         auto color = splitString(line);
                         if (!getline(configStream, line)) continue;
@@ -80,7 +86,7 @@ namespace RayTracer {
                         if (!getline(configStream, line)) continue;
                         auto radius = splitString(line);
 
-                        config.objects.emplace_back(std::make_unique<Sphere>(center, radius[0], color));
+                        config.objects.emplace_back(std::make_unique<Sphere>(center, radius[0], color, metalness[0]));
                     }
                     break;
 

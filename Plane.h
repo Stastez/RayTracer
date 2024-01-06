@@ -10,10 +10,11 @@ protected:
 
 public:
     Plane();
-    explicit Plane(const glm::vec3& color);
+    explicit Plane(const glm::vec3& color, float metalness);
     Plane(const glm::vec3& origin, const glm::vec3& normal);
-    Plane(const glm::vec3& origin, const glm::vec3& normal, const glm::vec3& color);
+    Plane(const glm::vec3& origin, const glm::vec3& normal, const glm::vec3& color, float metalness);
     [[nodiscard]] Intersection intersect(const Ray& ray) const override;
+    [[nodiscard]] Ray reflectRay(const Ray& ray, const Intersection& intersection) const override;
 };
 
 } // RayTracer

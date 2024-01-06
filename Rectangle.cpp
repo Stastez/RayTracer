@@ -2,9 +2,18 @@
 
 namespace RayTracer {
 
-    Rectangle::Rectangle() : size(glm::vec2()), xAxis(glm::vec3(1, 0 ,0)), yAxis(glm::cross(xAxis, normal)) {}
+    Rectangle::Rectangle() : Plane({0.5, 0.5, 0}, {0, 0, 1}), point1({0, 0, 0}), point2({1, 0, 0}), point3({0, 1, 0}), xAxis({0.5, 0, 0}), yAxis({0, 0.5, 0}) {}
 
-    Rectangle::Rectangle(const glm::vec3& origin, const glm::vec3& xAxis, const glm::vec3& yAxis, const glm::vec2& size) : Plane(origin, glm::cross(xAxis, yAxis)), size(size), xAxis(glm::normalize(xAxis)), yAxis(glm::normalize(yAxis)) {}
+    Rectangle::Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3) :
+        point1(point1),
+        point2(point2),
+        point3(point3),
+        xAxis((point2 - point1) * 0.5f),
+        yAxis((point3 - point1) * 0.5f)
+    {
+        origin = point1 + xAxis + yAxis;
+        normal = glm::cross(xAxis, yAxis);
+    }
 
     Intersection Rectangle::intersect(const Ray& ray)
     {
@@ -12,13 +21,12 @@ namespace RayTracer {
 
         if (!possibleIntersection.exists) return possibleIntersection;
 
-        const auto difference = glm::abs(possibleIntersection.position - origin);
-        const auto movement = possibleIntersection.position - origin;
-        const auto xAxisComponent = glm::abs(glm::dot(xAxis, movement));
-        const auto yAxisComponent = glm::abs(glm::dot(yAxis, movement));
+        const auto differenceFromOrigin = possibleIntersection.position - origin;
 
-        return (xAxisComponent < size.x / 2 && yAxisComponent < size.y / 2) ? possibleIntersection : Intersection{false, possibleIntersection.position};
+        const auto xAxisProjection = glm::dot(xAxis, differenceFromOrigin) / glm::dot(xAxis, xAxis) * xAxis;
+        const auto yAxisProjection = glm::dot(yAxis, differenceFromOrigin) / glm::dot(yAxis, yAxis) * yAxis;
+
+        return (glm::length(xAxisProjection) <= glm::length(xAxis) && glm::length(yAxisProjection) <= glm::length(yAxis)) ? possibleIntersection : Intersection{false, possibleIntersection.position};
     }
-
 
 } // RayTracer

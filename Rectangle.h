@@ -5,12 +5,12 @@ namespace RayTracer {
 
 class Rectangle final : public Plane {
 protected:
-    glm::vec2 size;
+    glm::vec3 point1, point2, point3;
     glm::vec3 xAxis, yAxis;
 
 public:
     Rectangle();
-    Rectangle(const glm::vec3& origin, const glm::vec3& xAxis, const glm::vec3& yAxis, const glm::vec2& size);
+    Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3);
     Intersection intersect(const Ray& ray) override;
 };
 

@@ -10,7 +10,7 @@ int main()
     constexpr unsigned resX = 200;
     constexpr unsigned resY = 200;
 
-    auto plane = RayTracer::Rectangle(glm::vec3(100, 100, 1), glm::vec3(1, 0, 1), {0, 1, 0}, glm::vec2(100, 100));
+    auto plane = RayTracer::Rectangle({10, 10, 0}, {190, 10, 1}, {10, 190, 1});
 
     auto ray = RayTracer::Ray();
 
@@ -20,6 +20,13 @@ int main()
     {
         for (unsigned y = 0; y < resY; ++y)
         {
+
+            if (x > 9 && y > 9)
+            {
+                int a = 50;
+                a /= 10;
+            }
+
             ray = RayTracer::Ray(glm::vec3(x, y, 0), glm::vec3(0, 0, 1));
             auto intersection = plane.intersect(ray);
             if (intersection.exists) pic.setPixel(x, y, glm::vec3(0, 0, intersection.position.z));
@@ -30,7 +37,7 @@ int main()
         }
     }
 
-    //std::cout << pic.getDebugView() << std::endl;
+    std::cout << pic.getDebugView() << std::endl;
 
     RayTracer::PngWriter::writePng(pic, "/media/stastez/SN850X/code/raytracer/test.png");
 }

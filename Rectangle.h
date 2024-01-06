@@ -11,7 +11,7 @@ protected:
 public:
     Rectangle();
     Rectangle(const glm::vec3& point1, const glm::vec3& point2, const glm::vec3& point3);
-    Intersection intersect(const Ray& ray) override;
+    [[nodiscard]] Intersection intersect(const Ray& ray) const override;
 };
 
 } // RayTracer

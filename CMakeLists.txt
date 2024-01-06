@@ -18,6 +18,10 @@ add_executable(${TARGET_NAME} main.cpp
         Plane.h
         Rectangle.cpp
         Rectangle.h
+        Sphere.cpp
+        Sphere.h
+        Scene.cpp
+        Scene.h
 )
 
 if(MSVC)

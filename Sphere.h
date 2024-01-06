@@ -1,16 +1,17 @@
 #pragma once
+
 #include "Geometry.h"
 
 namespace RayTracer {
 
-class Plane : public Geometry {
+class Sphere : public Geometry {
 protected:
-    glm::vec3 origin;
-    glm::vec3 normal;
+    glm::vec3 center;
+    float radius;
 
 public:
-    Plane();
-    Plane(const glm::vec3& origin, const glm::vec3& normal);
+    Sphere();
+    Sphere(const glm::vec3& center, float radius);
     [[nodiscard]] Intersection intersect(const Ray& ray) const override;
 };
 

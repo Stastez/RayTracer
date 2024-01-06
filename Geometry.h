@@ -10,13 +10,14 @@ struct Intersection
 {
     bool exists;
     glm::vec3 position;
+    float distance;
 };
 
 class Geometry
 {
 public:
     virtual ~Geometry() = default;
-    virtual Intersection intersect(const Ray& ray) = 0;
+    [[nodiscard]] virtual Intersection intersect(const Ray& ray) const = 0;
 };
 
 } // RayTracer

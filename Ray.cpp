@@ -2,7 +2,7 @@
 
 namespace RayTracer {
 
-    Ray::Ray() : origin(glm::vec3()), direction(glm::vec3()) {}
+    Ray::Ray() : origin({0, 0, 0}), direction({0, 0, 1}) {}
 
     Ray::Ray(const glm::vec3& origin, const glm::vec3& direction) : origin(origin), direction(glm::normalize(direction)) {}
 

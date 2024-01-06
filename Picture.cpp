@@ -51,13 +51,12 @@ namespace RayTracer {
     std::string Picture::getDebugView() const
     {
         auto output = std::string();
-        auto pixel = std::array<png_byte, 3>{0, 0, 0};
 
         for (unsigned y = 0; y < resolutionY; ++y)
         {
             for (unsigned x = 0; x < resolutionX; ++x)
             {
-                pixel = getPixel(x, y);
+                const auto pixel = getPixel(x, y);
                 output.append(std::to_string(pixel[0] + pixel[1] + pixel[2]) + "\t");
             }
             output.append("\n");

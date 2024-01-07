@@ -7,6 +7,7 @@
 #include <random>
 
 #include "ConfigReader.h"
+#include "ThreadSafeQueue.h"
 
 namespace RayTracer {
 
@@ -16,7 +17,23 @@ namespace RayTracer {
 
         const Scene scene {std::move(config.objects)};
 
-        const auto batchSize = config.resolutionX / numThreads;
+        ThreadSafeQueue queue;
+        for (auto x = 0u; x < config.resolutionX; ++x)
+        {
+            for (auto y = 0u; y < config.resolutionY; ++y)
+            {
+                queue.push({x, y});
+            }
+        }
+
+        std::vector<std::future<void>> threads(numThreads + 1);
+        for (auto i = 0u; i < numThreads; ++i)
+        {
+            threads[i] = std::async(std::launch::async, calculatePixels, numSamples, maxBounces, i, std::ref(scene), std::ref(config), std::ref(pic), std::ref(queue));
+        }
+        threads[numThreads] = std::async(std::launch::async, displayCompletion, std::ref(queue), config.resolutionX * config.resolutionY);
+
+        /*const auto batchSize = config.resolutionX / numThreads;
         std::vector<std::future<void>> threads(numThreads + 1);
         std::vector<float> completion(numThreads);
 
@@ -25,7 +42,7 @@ namespace RayTracer {
             threads[i] = std::async(std::launch::async, calculatePixels, i * batchSize, (i + 1) * batchSize + 1, numSamples, maxBounces, i, std::ref(scene), std::ref(config), std::ref(pic), std::ref(completion));
         }
         threads[numThreads - 1] = std::async(std::launch::async, calculatePixels, (numThreads - 1) * batchSize, config.resolutionX, numSamples, maxBounces, numThreads - 1, std::ref(scene), std::ref(config), std::ref(pic), std::ref(completion));
-        threads[numThreads] = std::async(std::launch::async, displayCompletion, std::ref(completion));
+        threads[numThreads] = std::async(std::launch::async, displayCompletion, std::ref(completion));*/
 
         for (const auto& thread : threads) thread.wait();
 
@@ -50,14 +67,32 @@ namespace RayTracer {
         return returnColor;
     }
 
-    void RayCaster::calculatePixels(const unsigned start, const unsigned end, const unsigned numSamples, const unsigned maxBounces, const unsigned thread, const Scene& scene, const Config& config, Picture& pic, std::vector<float>& completion)
+    void RayCaster::calculatePixels(const unsigned numSamples, const unsigned maxBounces, const unsigned thread, const Scene& scene, const Config& config, Picture& pic, ThreadSafeQueue& queue)
     {
         const auto aspectRatio = static_cast<float>(config.resolutionX) / static_cast<float>(config.resolutionY);
         const std::uniform_real_distribution<float> distribution(0, 1 / static_cast<float>(config.resolutionX));
-        std::mt19937 randomEngine{start};
+        std::mt19937 randomEngine{thread};
         auto random = std::bind(distribution, randomEngine);
 
-        for (auto x = start; x < end; ++x)
+        auto currentPixel = queue.pop();
+        while (currentPixel.valid)
+        {
+            auto color = glm::vec3{0};
+
+            for (auto sample = 0ul; sample < numSamples; ++sample)
+            {
+                auto ray = Ray(glm::vec3(static_cast<float>(currentPixel.pixel.x) / static_cast<float>(config.resolutionX) * aspectRatio, static_cast<float>(currentPixel.pixel.y) / static_cast<float>(config.resolutionY), 0), glm::vec3(0, 0, 1));
+                ray.deviate(random());
+                const auto result = castRay(ray, scene, maxBounces);
+                color += result / static_cast<float>(numSamples);
+            }
+
+            pic.setPixel(currentPixel.pixel.x, currentPixel.pixel.y, color);
+
+            currentPixel = queue.pop();
+        }
+
+        /*for (auto x = start; x < end; ++x)
         {
             if (x % 5 == 0)
             {
@@ -80,28 +115,19 @@ namespace RayTracer {
             }
         }
 
-        completion[thread] = 100.f;
+        completion[thread] = 100.f;*/
     }
 
-    void RayCaster::displayCompletion(std::vector<float>& completion)
+    void RayCaster::displayCompletion(const ThreadSafeQueue& queue, const unsigned pixelCount)
     {
-        while (std::any_of(completion.begin(), completion.end(), [](float x){return x < 99;}))
+        while (!queue.empty())
         {
-            std::cout << "Completion:\n";
-            for (const auto& progress : completion)
-            {
-                std::cout << std::setw(3) << std::setfill('0') << std::setprecision(3) << progress << "%\t";
-            }
-            std::cout << "\n";
+            const auto completion = static_cast<float>(pixelCount - queue.size()) / static_cast<float>(pixelCount);
+            std::cout << "Completion: " << completion * 100.f << "%\n";
             std::this_thread::sleep_for(std::chrono_literals::operator ""ms(1000));
         }
 
-        std::cout << "Completion:\n";
-        for (const auto& progress : completion)
-        {
-            std::cout << std::setw(3) << std::setfill('0') << std::setprecision(3) << progress << "%\t";
-        }
-        std::cout << "\n";
+        std::cout << "Completion: 100%" << std::endl;
     }
 
 } // RayTracer

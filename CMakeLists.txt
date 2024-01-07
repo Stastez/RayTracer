@@ -26,6 +26,8 @@ add_executable(${TARGET_NAME} main.cpp
         ConfigReader.h
         RayCaster.cpp
         RayCaster.h
+        ThreadSafeQueue.cpp
+        ThreadSafeQueue.h
 )
 
 if(MSVC)

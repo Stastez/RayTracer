@@ -6,7 +6,7 @@ namespace RayTracer {
 
     Ray::Ray(const glm::vec3& origin, const glm::vec3& direction) : origin(origin), direction(glm::normalize(direction)) {}
 
-    void Ray::deviateVec(glm::vec3& vec, float magnitude)
+    void Ray::deviateVec(glm::vec3& vec, const float magnitude)
     {
         const auto deviation = glm::vec3{magnitude, magnitude, magnitude};
         vec += deviation;
@@ -18,12 +18,12 @@ namespace RayTracer {
         deviateOrigin(magnitude);
     }
 
-    void Ray::deviateDirection(float magnitude)
+    void Ray::deviateDirection(const float magnitude)
     {
         deviateVec(direction, magnitude);
     }
 
-    void Ray::deviateOrigin(float magnitude)
+    void Ray::deviateOrigin(const float magnitude)
     {
         deviateVec(origin, magnitude);
     }

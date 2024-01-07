@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <future>
-#include <iomanip>
 #include <iostream>
 #include <random>
 
@@ -32,17 +31,6 @@ namespace RayTracer {
             threads[i] = std::async(std::launch::async, calculatePixels, numSamples, maxBounces, i, std::ref(scene), std::ref(config), std::ref(pic), std::ref(queue));
         }
         threads[numThreads] = std::async(std::launch::async, displayCompletion, std::ref(queue), config.resolutionX * config.resolutionY);
-
-        /*const auto batchSize = config.resolutionX / numThreads;
-        std::vector<std::future<void>> threads(numThreads + 1);
-        std::vector<float> completion(numThreads);
-
-        for (auto i = 0u; i < numThreads - 1; ++i)
-        {
-            threads[i] = std::async(std::launch::async, calculatePixels, i * batchSize, (i + 1) * batchSize + 1, numSamples, maxBounces, i, std::ref(scene), std::ref(config), std::ref(pic), std::ref(completion));
-        }
-        threads[numThreads - 1] = std::async(std::launch::async, calculatePixels, (numThreads - 1) * batchSize, config.resolutionX, numSamples, maxBounces, numThreads - 1, std::ref(scene), std::ref(config), std::ref(pic), std::ref(completion));
-        threads[numThreads] = std::async(std::launch::async, displayCompletion, std::ref(completion));*/
 
         for (const auto& thread : threads) thread.wait();
 
@@ -91,31 +79,6 @@ namespace RayTracer {
 
             currentPixel = queue.pop();
         }
-
-        /*for (auto x = start; x < end; ++x)
-        {
-            if (x % 5 == 0)
-            {
-                completion[thread] = std::floor(static_cast<float>(x - start) / static_cast<float>(end - 1 - start) * 100.f);
-            }
-
-            for (auto y = 0u; y < config.resolutionY; ++y)
-            {
-                auto color = glm::vec3{0};
-
-                for (auto sample = 0ul; sample < numSamples; ++sample)
-                {
-                    auto ray = Ray(glm::vec3(static_cast<float>(x) / static_cast<float>(config.resolutionX) * aspectRatio, static_cast<float>(y) / static_cast<float>(config.resolutionY), 0), glm::vec3(0, 0, 1));
-                    ray.deviate(random());
-                    const auto result = castRay(ray, scene, maxBounces);
-                    color += result / static_cast<float>(numSamples);
-                }
-
-                pic.setPixel(x, y, color);
-            }
-        }
-
-        completion[thread] = 100.f;*/
     }
 
     void RayCaster::displayCompletion(const ThreadSafeQueue& queue, const unsigned pixelCount)

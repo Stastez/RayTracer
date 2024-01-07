@@ -7,26 +7,22 @@
 
 namespace RayTracer {
 
-    Picture RayCaster::castRays(Config& config, const unsigned numSamples, const unsigned numThreads)
+    Picture RayCaster::castRays(Config& config, const unsigned numSamples, const unsigned numThreads, const unsigned maxBounces)
     {
         Picture pic {config.resolutionX, config.resolutionY};
 
         const Scene scene {std::move(config.objects)};
 
-        for (unsigned x = 0; x < config.resolutionX; ++x)
+        const auto batchSize = config.resolutionX / numThreads;
+        std::vector<std::future<void>> threads {numThreads};
+
+        for (auto i = 0u; i < numThreads - 1; ++i)
         {
-            for (unsigned y = 0; y < config.resolutionY; y += numThreads)
-            {
-                std::vector<std::future<void>> threads {numThreads};
-                for (auto i = 0u; i < numThreads; ++i)
-                {
-                    threads[i] = std::async(std::launch::async,calculatePixel, x, y + i, numSamples, std::ref(scene), std::ref(config), std::ref(pic));
-                    //calculatePixel(x, y + i, numSamples, scene, config, pic);
-                }
-                for (const auto& thread : threads) thread.wait();
-                //std::cout << pic.getDebugView() << std::endl;
-            }
+            threads[i] = std::async(std::launch::async, calculatePixels, i * batchSize, (i + 1) * batchSize + 1, numSamples, maxBounces, std::ref(scene), std::ref(config), std::ref(pic));
         }
+        threads[numThreads - 1] = std::async(std::launch::async, calculatePixels, (numThreads - 1) * batchSize, config.resolutionX, numSamples, maxBounces, std::ref(scene), std::ref(config), std::ref(pic));
+
+        for (const auto& thread : threads) thread.wait();
 
         return pic;
     }
@@ -36,7 +32,7 @@ namespace RayTracer {
         auto bounces = 0u;
 
         auto intersection = scene.intersect(ray);
-        auto returnColor = (intersection.exists) ? /*(1 - intersection.distance) * intersection.object->getColor()*/ intersection.object->getColor() : glm::vec3{0};
+        auto returnColor = (intersection.exists) ? intersection.object->getColor() : glm::vec3{0};
 
         while (bounces++ < maxBounces && intersection.exists && intersection.object->getMetalness() > 0 && intersection.distance > 0.01)
         {
@@ -46,27 +42,32 @@ namespace RayTracer {
             returnColor = glm::mix(returnColor, intersection.object->getColor(), oldMetalness);
         }
 
-        //if (!intersection.exists || intersection.object->getMetalness() <= 0 || intersection.distance <= 0.01) return returnColor;
-
         return returnColor;
     }
 
-    void RayCaster::calculatePixel(const unsigned x, const unsigned y, const unsigned numSamples, const Scene& scene, const Config& config, Picture& pic)
+    void RayCaster::calculatePixels(const unsigned start, const unsigned end, const unsigned numSamples, const unsigned maxBounces, const Scene& scene, const Config& config, Picture& pic)
     {
-        if (x >= config.resolutionX || y >= config.resolutionY) return;
-
         const auto aspectRatio = static_cast<float>(config.resolutionX) / static_cast<float>(config.resolutionY);
-        auto color = glm::vec3{0};
 
-        for (auto i = 0ul; i < numSamples; ++i)
+        for (auto x = start; x < end; ++x)
         {
-            auto ray = Ray(glm::vec3(static_cast<float>(x) / static_cast<float>(config.resolutionX) * aspectRatio, static_cast<float>(y) / static_cast<float>(config.resolutionY), 0), glm::vec3(0, 0, 1));
-            ray.deviate(1 / static_cast<float>(config.resolutionX));
-            const auto result = castRay(ray, scene, 1000);
-            color += result / static_cast<float>(numSamples);
-        }
+            if (x % 5 == 0 && start == 0) std::cout << "Completion: " << static_cast<float>(x) / static_cast<float>(end - 1 - start) * 100.f << "%\n";
 
-        pic.setPixel(x, y, color);
+            for (auto y = 0u; y < config.resolutionY; ++y)
+            {
+                auto color = glm::vec3{0};
+
+                for (auto sample = 0ul; sample < numSamples; ++sample)
+                {
+                    auto ray = Ray(glm::vec3(static_cast<float>(x) / static_cast<float>(config.resolutionX) * aspectRatio, static_cast<float>(y) / static_cast<float>(config.resolutionY), 0), glm::vec3(0, 0, 1));
+                    ray.deviate(1 / static_cast<float>(config.resolutionX));
+                    const auto result = castRay(ray, scene, maxBounces);
+                    color += result / static_cast<float>(numSamples);
+                }
+
+                pic.setPixel(x, y, color);
+            }
+        }
     }
 
 

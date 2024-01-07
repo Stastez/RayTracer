@@ -13,6 +13,7 @@ struct Config
 {
     std::string outputPath;
     unsigned resolutionX, resolutionY;
+    unsigned maxBounces, numSamples;
     std::vector<std::unique_ptr<Geometry>> objects;
 };
 

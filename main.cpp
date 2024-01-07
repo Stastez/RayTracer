@@ -18,7 +18,7 @@ int main(const int argc, const char* argv[])
 
     auto config = RayTracer::ConfigReader::readConfig(argv[1]);
 
-    const auto pic = RayTracer::RayCaster::castRays(config, 128, std::thread::hardware_concurrency());
+    const auto pic = RayTracer::RayCaster::castRays(config, config.numSamples, std::thread::hardware_concurrency(), config.maxBounces);
 
     //std::cout << pic.getDebugView() << std::endl;
 

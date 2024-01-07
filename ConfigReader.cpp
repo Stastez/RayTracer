@@ -42,6 +42,22 @@ namespace RayTracer {
                     }
                     break;
 
+                case 'f':
+                    {
+                        if (!getline(configStream, line)) continue;
+                        auto numSamples = splitString(line);
+                        config.numSamples = static_cast<unsigned>(numSamples[0]);
+                    }
+                    break;
+
+                case 'b':
+                    {
+                        if (!getline(configStream, line)) continue;
+                        auto maxBounces = splitString(line);
+                        config.maxBounces = static_cast<unsigned>(maxBounces[0]);
+                    }
+                    break;
+
                 case 'p':
                     {
                         if (!getline(configStream, line)) continue;

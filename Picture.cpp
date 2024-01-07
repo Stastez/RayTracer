@@ -12,7 +12,6 @@ namespace RayTracer {
         return (x + (resolutionY - 1u - y) * resolutionX) * 3u;
     }
 
-
     void Picture::setPixel(const unsigned x, const unsigned y, const std::array<png_byte, 3>& color)
     {
         const unsigned index = calculateIndex(x, y);
@@ -23,6 +22,12 @@ namespace RayTracer {
     void Picture::setPixel(const unsigned x, const unsigned y, const glm::vec3& color)
     {
         const unsigned index = calculateIndex(x, y);
+        for (int i = 0; i < 3; ++i)
+            data[index + i] = static_cast<png_byte>(color[i] * 255);
+    }
+
+    void Picture::setPixel(const unsigned index, const glm::vec3& color)
+    {
         for (int i = 0; i < 3; ++i)
             data[index + i] = static_cast<png_byte>(color[i] * 255);
     }

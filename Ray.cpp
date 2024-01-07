@@ -8,7 +8,7 @@ namespace RayTracer {
 
     void Ray::deviateVec(glm::vec3& vec, float magnitude)
     {
-        const auto deviation = glm::vec3{randomFloat(magnitude), randomFloat(magnitude), randomFloat(magnitude)};
+        const auto deviation = glm::vec3{magnitude, magnitude, magnitude};
         vec += deviation;
     }
 
@@ -36,11 +36,6 @@ namespace RayTracer {
     glm::vec3 Ray::getOrigin() const
     {
         return origin;
-    }
-
-    float Ray::randomFloat(const float max)
-    {
-        return static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/max));
     }
 
 } // RayTracer

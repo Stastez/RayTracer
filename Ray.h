@@ -8,7 +8,6 @@ class Ray {
 private:
     glm::vec3 origin;
     glm::vec3 direction;
-    static float randomFloat(float max);
     static void deviateVec(glm::vec3& vec, float magnitude);
 
 public:

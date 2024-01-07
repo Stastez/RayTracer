@@ -15,3 +15,7 @@ This project requires...
 Both are available from [vcpkg](https://vcpkg.io/en/).
 
 Provide a config file in the same format as [config.cfg](config.cfg) as a command line parameter to specify the scene to use.
+
+## What?
+The current result is as follows:
+![Ray traced image](output.jpg)

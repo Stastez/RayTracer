@@ -87,7 +87,8 @@ namespace RayTracer {
         {
             const auto completion = static_cast<float>(pixelCount - queue.size()) / static_cast<float>(pixelCount);
             std::cout << "Completion: " << completion * 100.f << "%\n";
-            std::this_thread::sleep_for(std::chrono_literals::operator ""ms(1000));
+            // Cast because MSVC cannot figure out what types 1000 or 1000L are
+            std::this_thread::sleep_for(std::chrono_literals::operator ""ms(static_cast<long double>(1000)));
         }
 
         std::cout << "Completion: 100%" << std::endl;

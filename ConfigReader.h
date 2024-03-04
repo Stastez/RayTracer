@@ -21,6 +21,8 @@ struct Config
 class ConfigReader {
 private:
     static glm::vec3 splitString(const std::string& input);
+    static bool isInvalid(float value);
+    static std::ifstream & getSanitizedLine(std::ifstream& stream, std::string& string);
 
 public:
     static Config readConfig(const std::string& path);

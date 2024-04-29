@@ -1,12 +1,10 @@
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 #include "ConfigReader.h"
-#include "Picture.h"
-#include "Plane.h"
 #include "PngWriter.h"
 #include "RayCaster.h"
-#include "Scene.h"
 
 int main(const int argc, const char* argv[])
 {
@@ -18,7 +16,11 @@ int main(const int argc, const char* argv[])
 
     auto config = RayTracer::ConfigReader::readConfig(argv[1]);
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     const auto pic = RayTracer::RayCaster::castRays(config, config.numSamples, std::thread::hardware_concurrency(), config.maxBounces);
+
+    std::cout << "Elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << "ms" << std::endl;
 
     //std::cout << pic.getDebugView() << std::endl;
 

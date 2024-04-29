@@ -1,7 +1,5 @@
 #include "Sphere.h"
 
-#include <iostream>
-
 namespace RayTracer {
 
     Sphere::Sphere() : Sphere({0, 0, 0}, 1) {}
